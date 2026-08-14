@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FunTheDelay — Demo</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="demo.css">
 </head>
 <body>
@@ -55,12 +56,21 @@
     <section id="screen-result" class="screen hidden">
       <div class="flight-banner" id="flight-banner"></div>
 
+      <section class="route-map-card" aria-labelledby="route-map-title">
+        <div class="route-map-heading">
+          <div><span class="eyebrow">YOUR ROUTE</span><h2 id="route-map-title">Flight route</h2></div>
+          <span id="route-distance" class="distance-pill"></span>
+        </div>
+        <div class="route-map" id="route-map"></div>
+        <div class="route-cities" id="route-cities"></div>
+      </section>
+
       <div id="delay-card"></div>
       <div id="plan-sections"></div>
 
       <div class="actions">
         <button id="reset-btn" class="btn btn-outline">Start a new plan</button>
-        <a href="#screen-input" class="btn btn-outline">Edit my needs</a>
+        <button id="edit-needs-btn" class="btn btn-red">Edit my needs</button>
       </div>
       <p class="disclaimer">Simulated demo output. In the real app, this plan would be generated live by our AI using live flight, hotel, and transport data.</p>
     </section>
@@ -69,6 +79,7 @@
 
   <footer class="footer">© 2026 FunTheDelay — MVP demo. All rights reserved.</footer>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="demo.js"></script>
 </body>
 </html>
