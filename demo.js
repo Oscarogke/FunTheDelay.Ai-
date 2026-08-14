@@ -94,9 +94,11 @@
   var originSelect = document.getElementById("origin-country");
   var destinationSelect = document.getElementById("destination-country");
   var featuredSelect = document.getElementById("featured-route");
+  var featuredList = document.getElementById("featured-route-list");
   var flightInput = document.getElementById("flight-input");
   var routeMap;
   var routeLayer;
+  var realPlacesCache = {};
 
   populateWorldwideRoutes();
 
@@ -134,6 +136,11 @@
     originSelect.value = "";
     destinationSelect.value = "";
     featuredSelect.value = "";
+    setFeaturedListDisabled(false);
+    featuredList.querySelectorAll(".flight-pick.selected").forEach(function (item) {
+      item.classList.remove("selected");
+      item.setAttribute("aria-selected", "false");
+    });
     originSelect.disabled = false;
     destinationSelect.disabled = false;
     featuredSelect.disabled = false;
@@ -147,6 +154,7 @@
     originSelect.disabled = true;
     destinationSelect.disabled = true;
     featuredSelect.disabled = true;
+    setFeaturedListDisabled(true);
     document.querySelector('#plan-form button[type="submit"]').textContent = "Update my plan";
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
@@ -162,6 +170,27 @@
       var from = findCountry(route.from);
       var to = findCountry(route.to);
       featuredSelect.add(new Option((index + 1) + ". " + from.name + " → " + to.name, route.from + ":" + route.to));
+      var item = document.createElement("button");
+      item.type = "button";
+      item.className = "flight-pick";
+      item.setAttribute("role", "option");
+      item.setAttribute("aria-selected", "false");
+      item.innerHTML = '<span class="flight-flags">' + countryFlag(from.code) + ' <b>→</b> ' + countryFlag(to.code) + '</span>' +
+        '<span class="flight-pick-route"><strong>' + from.name + '</strong><small>to</small><strong>' + to.name + '</strong></span>' +
+        '<span class="flight-pick-code">' + generatedCode(from, to) + '</span>';
+      item.addEventListener("click", function () {
+        featuredList.querySelectorAll(".flight-pick.selected").forEach(function (selected) {
+          selected.classList.remove("selected");
+          selected.setAttribute("aria-selected", "false");
+        });
+        item.classList.add("selected");
+        item.setAttribute("aria-selected", "true");
+        featuredSelect.value = route.from + ":" + route.to;
+        originSelect.value = route.from;
+        destinationSelect.value = route.to;
+        updateGeneratedFlightNumber();
+      });
+      featuredList.appendChild(item);
     });
     originSelect.value = "US";
     destinationSelect.value = "PA";
@@ -175,6 +204,17 @@
       destinationSelect.value = pair[1];
       updateGeneratedFlightNumber();
     });
+  }
+
+  function countryFlag(code) {
+    if (!code || code.length !== 2) return '<span aria-hidden="true">🌐</span>';
+    var lower = code.toLowerCase();
+    return '<img class="country-flag" src="https://flagcdn.com/24x18/' + lower + '.png" srcset="https://flagcdn.com/48x36/' + lower + '.png 2x" width="24" height="18" loading="lazy" alt="' + code.toUpperCase() + ' flag">';
+  }
+
+  function setFeaturedListDisabled(disabled) {
+    featuredList.classList.toggle("disabled", disabled);
+    featuredList.querySelectorAll("button").forEach(function (button) { button.disabled = disabled; });
   }
 
   function findCountry(code) {
@@ -214,6 +254,7 @@
       dep: (8 + hash(from.code) % 12).toString().padStart(2, "0") + ":" + (hash(to.code) % 4 * 15).toString().padStart(2, "0"),
       delay: 2 + hash(from.code + to.code) % 11,
       reason: document.getElementById("cause-select").value,
+      destinationCountry: to,
       code: code
     };
   }
@@ -266,74 +307,105 @@
         '</ul></div></div>';
     }
 
-    if (needs.indexOf("overnight") !== -1) {
-      html += sectionHeader("Stay overnight", "A hotel, a meal, and a ride — planned together.");
-      html += '<h3 style="margin:.4rem 0 .6rem">Hotels</h3>';
-      html += '<div class="cards">';
-      hotels.forEach(function (h, i) {
-        var rec = i === 0 ? " recommended" : "";
-        html += '<div class="card' + rec + '">' +
-          (i === 0 ? '<span class="tag rec">Recommended</span>' : '<span class="tag">Option</span>') +
-          '<h3>' + h.name + '</h3>' +
-          '<p class="row"><span>' + h.dist + '</span></p>' +
-          '<p class="row">⭐ ' + h.rating + ' · ' + h.am + '</p>' +
-          '<p class="row price">' + h.price + '</p>' +
-          '<blockquote class="review">“' + h.review + '”<cite>— ' + h.author + '</cite></blockquote></div>';
-      });
-      html += "</div>";
-
-      html += '<h3 style="margin:1.4rem 0 .6rem">Places to eat</h3>';
-      html += '<div class="cards">';
-      restaurants.forEach(function (r, i) {
-        html += '<div class="card">' +
-          '<span class="tag">' + r.type + '</span>' +
-          '<h3>' + r.name + '</h3>' +
-          '<p class="row"><span>' + r.dist + '</span></p>' +
-          '<p class="row price">' + r.price + '</p></div>';
-      });
-      html += "</div>";
-
-      html += '<h3 style="margin:1.4rem 0 .6rem">Getting there</h3>';
-      html += '<div class="cards">';
-      transport.forEach(function (t) {
-        html += '<div class="card">' +
-          '<span class="tag">Transport</span>' +
-          '<h3>' + t.name + '</h3>' +
-          '<p class="row"><span>' + t.time + '</span></p>' +
-          '<p class="row">' + t.note + '</p>' +
-          '<p class="row price">' + t.price + '</p></div>';
-      });
-      html += "</div>";
-    }
-
-    if (needs.indexOf("transport") !== -1) {
-      html += sectionHeader("City transport", "Move around the city easily.");
-      html += '<div class="cards">';
-      transport.forEach(function (t) {
-        html += '<div class="card">' +
-          '<span class="tag">Transport</span>' +
-          '<h3>' + t.name + '</h3>' +
-          '<p class="row"><span>' + t.time + '</span></p>' +
-          '<p class="row">' + t.note + '</p>' +
-          '<p class="row price">' + t.price + '</p></div>';
-      });
-      html += "</div>";
-    }
-
-    if (needs.indexOf("fun") !== -1) {
-      html += sectionHeader("Local attractions", "Make this stop a mini-vacation while you wait.");
-      html += '<div class="cards">';
-      attractions.forEach(function (a) {
-        html += '<div class="card">' +
-          '<span class="tag">' + a.type + '</span>' +
-          '<h3>' + a.name + '</h3>' +
-          '<p class="row">⏱ ' + a.time + '</p>' +
-          '<p class="row price">' + a.price + '</p></div>';
-      });
-      html += "</div>";
+    if (needs.indexOf("overnight") !== -1 || needs.indexOf("transport") !== -1 || needs.indexOf("fun") !== -1) {
+      html += sectionHeader("Real places near " + flight.destinationCountry.capital, "Live destination recommendations from OpenStreetMap.");
+      html += '<div id="real-places" class="real-places-loading"><span class="loading-ring"></span><p>Finding real hotels, food, attractions and transport…</p></div>';
     }
 
     planSections.innerHTML = html;
+    if (document.getElementById("real-places")) loadRealPlaces(flight, needs);
+  }
+
+  async function loadRealPlaces(flight, needs) {
+    var country = flight.destinationCountry;
+    var target = document.getElementById("real-places");
+    if (!target || !country) return;
+    try {
+      var places = realPlacesCache[country.code];
+      if (!places && window.CACHED_REAL_PLACES && window.CACHED_REAL_PLACES[country.code]) {
+        places = categorizePlaces(window.CACHED_REAL_PLACES[country.code].map(function (tags) { return { tags: tags }; }));
+        realPlacesCache[country.code] = places;
+      }
+      if (!places) {
+        var lat = Number(country.lat).toFixed(5);
+        var lon = Number(country.lon).toFixed(5);
+        var query = '[out:json][timeout:15];' +
+          'nwr["name"]["tourism"~"hotel|hostel|guest_house"](around:12000,' + lat + ',' + lon + ');out tags center 4;' +
+          'nwr["name"]["amenity"~"restaurant|cafe|fast_food"](around:7000,' + lat + ',' + lon + ');out tags center 4;' +
+          'nwr["name"]["tourism"~"attraction|museum|gallery|viewpoint"](around:12000,' + lat + ',' + lon + ');out tags center 4;' +
+          'nwr["name"]["amenity"~"taxi|bus_station|ferry_terminal"](around:10000,' + lat + ',' + lon + ');out tags center 4;';
+        var controller = new AbortController();
+        var timer = setTimeout(function () { controller.abort(); }, 18000);
+        var response;
+        try {
+          response = await fetch("https://maps.mail.ru/osm/tools/overpass/api/interpreter?data=" + encodeURIComponent(query), { signal: controller.signal });
+        } finally {
+          clearTimeout(timer);
+        }
+        if (!response.ok) throw new Error("Place service unavailable");
+        var data = await response.json();
+        places = categorizePlaces(data.elements || []);
+        realPlacesCache[country.code] = places;
+      }
+      target.className = "real-places-results";
+      target.innerHTML = renderRealPlaces(places, needs, country);
+    } catch (error) {
+      target.className = "real-places-error";
+      target.innerHTML = '<p><strong>Live places are temporarily unavailable.</strong><br>Please retry shortly. We do not substitute made-up recommendations.</p>';
+    }
+  }
+
+  function categorizePlaces(elements) {
+    var groups = { hotels: [], food: [], attractions: [], transport: [] };
+    var seen = {};
+    elements.forEach(function (element) {
+      var tags = element.tags || {};
+      var name = tags.name;
+      if (!name || seen[name.toLowerCase()]) return;
+      var group;
+      if (/hotel|hostel|guest_house/.test(tags.tourism || "")) group = "hotels";
+      else if (/restaurant|cafe|fast_food/.test(tags.amenity || "")) group = "food";
+      else if (/attraction|museum|gallery|viewpoint/.test(tags.tourism || "")) group = "attractions";
+      else group = "transport";
+      if (groups[group].length >= 4) return;
+      seen[name.toLowerCase()] = true;
+      groups[group].push({ name: name, type: readablePlaceType(tags), address: placeAddress(tags) });
+    });
+    return groups;
+  }
+
+  function readablePlaceType(tags) {
+    var value = tags.tourism || tags.amenity || tags.public_transport || "place";
+    return value.replace(/_/g, " ").replace(/\b\w/g, function (letter) { return letter.toUpperCase(); });
+  }
+
+  function placeAddress(tags) {
+    return [tags["addr:housenumber"], tags["addr:street"], tags["addr:city"]].filter(Boolean).join(" ") || "Near the destination capital";
+  }
+
+  function renderRealPlaces(places, needs, country) {
+    var html = "";
+    if (needs.indexOf("overnight") !== -1) {
+      html += realPlaceGroup("Hotels", places.hotels, "Stay");
+      html += realPlaceGroup("Places to eat", places.food, "Food");
+      html += realPlaceGroup("Getting there", places.transport, "Transport");
+    } else if (needs.indexOf("transport") !== -1) {
+      html += realPlaceGroup("Local transport", places.transport, "Transport");
+    }
+    if (needs.indexOf("fun") !== -1) html += realPlaceGroup("Local attractions", places.attractions, "Explore");
+    html += '<p class="places-source">Real place names around ' + safeText(country.capital) + ', sourced live from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>. Availability and opening hours should be verified.</p>';
+    return html;
+  }
+
+  function realPlaceGroup(title, places, tag) {
+    if (!places.length) return '<div class="real-place-group"><h3>' + safeText(title) + '</h3><p class="plan-note">No named places were found in this category.</p></div>';
+    return '<div class="real-place-group"><h3>' + safeText(title) + '</h3><div class="cards">' + places.map(function (place) {
+      return '<article class="card real-place-card"><span class="tag">' + safeText(tag) + '</span><h3>' + safeText(place.name) + '</h3><p class="row"><strong>' + safeText(place.type) + '</strong></p><p class="row">' + safeText(place.address) + '</p></article>';
+    }).join("") + '</div></div>';
+  }
+
+  function safeText(value) {
+    return String(value || "").replace(/[&<>"']/g, function (character) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[character]; });
   }
 
   function renderRouteMap(flight) {

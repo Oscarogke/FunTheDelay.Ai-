@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FunTheDelay — Demo</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="demo.css">
+  <link rel="stylesheet" href="demo.css?v=realplaces2">
 </head>
 <body>
 
@@ -24,10 +24,12 @@
 
       <form id="plan-form">
         <div class="field">
-          <label for="featured-route">100 featured flights</label>
-          <select id="featured-route">
+          <label id="featured-route-label" for="featured-route">100 featured flights</label>
+          <select id="featured-route" class="visually-hidden" tabindex="-1" aria-hidden="true">
             <option value="">Choose a featured flight (optional)</option>
           </select>
+          <div id="featured-route-list" class="flight-picker" role="listbox" aria-labelledby="featured-route-label"></div>
+          <p class="field-note">Scroll through the routes and tap one to select it.</p>
         </div>
 
         <div class="route-fields">
@@ -105,7 +107,8 @@
   <footer class="footer">© 2026 FunTheDelay — MVP demo. All rights reserved.</footer>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="countries.js?v=bd92172"></script>
-  <script src="demo.js?v=bd92172"></script>
+  <script src="countries.js?v=realplaces2"></script>
+  <script src="places.js?v=realplaces2"></script>
+  <script src="demo.js?v=realplaces2"></script>
 </body>
 </html>
