@@ -91,23 +91,23 @@
   var flightBanner = document.getElementById("flight-banner");
   var delayCard = document.getElementById("delay-card");
   var planSections = document.getElementById("plan-sections");
+  var originSelect = document.getElementById("origin-country");
+  var destinationSelect = document.getElementById("destination-country");
+  var featuredSelect = document.getElementById("featured-route");
+  var flightInput = document.getElementById("flight-input");
   var routeMap;
   var routeLayer;
 
+  populateWorldwideRoutes();
+
   document.getElementById("plan-form").addEventListener("submit", function (e) {
     e.preventDefault();
-    var code = document.getElementById("flight-input").value.trim().toUpperCase();
-
-    var flight = flightsDb[code] || {
-      airline: "Copa Airlines",
-      from: "Unknown airport",
-      to: "Panama City (PTY)",
-      dep: "13:00",
-      delay: 8,
-      reason: document.getElementById("cause-select").value,
-      fromPoint: [41.98, -87.90],
-      toPoint: [9.07, -79.38]
-    };
+    var code = flightInput.value.trim().toUpperCase();
+    var flight = buildWorldwideFlight(originSelect.value, destinationSelect.value);
+    if (!flight) {
+      alert("Choose two different countries to generate your flight.");
+      return;
+    }
     flight.code = code;
 
     var cause = document.getElementById("cause-select").value;
@@ -130,8 +130,13 @@
   document.getElementById("reset-btn").addEventListener("click", function () {
     document.getElementById("screen-result").classList.add("hidden");
     document.getElementById("screen-input").classList.remove("hidden");
-    document.getElementById("flight-input").value = "";
-    document.getElementById("flight-input").readOnly = false;
+    flightInput.value = "";
+    originSelect.value = "";
+    destinationSelect.value = "";
+    featuredSelect.value = "";
+    originSelect.disabled = false;
+    destinationSelect.disabled = false;
+    featuredSelect.disabled = false;
     document.querySelector('#plan-form button[type="submit"]').textContent = "Generate my plan";
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
@@ -139,10 +144,79 @@
   document.getElementById("edit-needs-btn").addEventListener("click", function () {
     document.getElementById("screen-result").classList.add("hidden");
     document.getElementById("screen-input").classList.remove("hidden");
-    document.getElementById("flight-input").readOnly = true;
+    originSelect.disabled = true;
+    destinationSelect.disabled = true;
+    featuredSelect.disabled = true;
     document.querySelector('#plan-form button[type="submit"]').textContent = "Update my plan";
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
+
+  function populateWorldwideRoutes() {
+    if (!window.COUNTRIES || !window.FEATURED_FLIGHTS) return;
+    window.COUNTRIES.forEach(function (country) {
+      var label = country.name + " — " + country.capital;
+      originSelect.add(new Option(label, country.code));
+      destinationSelect.add(new Option(label, country.code));
+    });
+    window.FEATURED_FLIGHTS.forEach(function (route, index) {
+      var from = findCountry(route.from);
+      var to = findCountry(route.to);
+      featuredSelect.add(new Option((index + 1) + ". " + from.name + " → " + to.name, route.from + ":" + route.to));
+    });
+    originSelect.value = "US";
+    destinationSelect.value = "PA";
+    updateGeneratedFlightNumber();
+    originSelect.addEventListener("change", updateGeneratedFlightNumber);
+    destinationSelect.addEventListener("change", updateGeneratedFlightNumber);
+    featuredSelect.addEventListener("change", function () {
+      if (!this.value) return;
+      var pair = this.value.split(":");
+      originSelect.value = pair[0];
+      destinationSelect.value = pair[1];
+      updateGeneratedFlightNumber();
+    });
+  }
+
+  function findCountry(code) {
+    return window.COUNTRIES.find(function (country) { return country.code === code; });
+  }
+
+  function updateGeneratedFlightNumber() {
+    var from = findCountry(originSelect.value);
+    var to = findCountry(destinationSelect.value);
+    if (!from || !to || from.code === to.code) {
+      flightInput.value = "";
+      return;
+    }
+    flightInput.value = generatedCode(from, to);
+  }
+
+  function generatedCode(from, to) {
+    var prefixes = { Africa: "AT", Americas: "PA", Asia: "SK", Europe: "EU", Oceania: "OC", Antarctic: "AN" };
+    var prefix = prefixes[from.region] || "FT";
+    var number = 100 + (hash(from.code + to.code) % 900);
+    return prefix + number;
+  }
+
+  function buildWorldwideFlight(fromCode, toCode) {
+    var from = findCountry(fromCode);
+    var to = findCountry(toCode);
+    if (!from || !to || from.code === to.code) return null;
+    var airlines = { Africa: "Africa Connect", Americas: "Pan-American Airways", Asia: "Sky Asia", Europe: "Euro Wings", Oceania: "Pacific Connect", Antarctic: "Global Air" };
+    var code = generatedCode(from, to);
+    flightInput.value = code;
+    return {
+      airline: airlines[from.region] || "FunTheDelay Air",
+      from: from.capital + " (" + from.airport + ")",
+      to: to.capital + " (" + to.airport + ")",
+      fromPoint: [from.lat, from.lon],
+      toPoint: [to.lat, to.lon],
+      dep: (8 + hash(from.code) % 12).toString().padStart(2, "0") + ":" + (hash(to.code) % 4 * 15).toString().padStart(2, "0"),
+      delay: 2 + hash(from.code + to.code) % 11,
+      reason: document.getElementById("cause-select").value,
+      code: code
+    };
+  }
 
   function renderResult(flight, cause, needs) {
     var seed = hash(flight.airline + flight.from + cause);

@@ -24,8 +24,32 @@
 
       <form id="plan-form">
         <div class="field">
-          <label for="flight-input">Flight number</label>
-          <input type="text" id="flight-input" placeholder="e.g. UA123" maxlength="8" required>
+          <label for="featured-route">100 featured flights</label>
+          <select id="featured-route">
+            <option value="">Choose a featured flight (optional)</option>
+          </select>
+        </div>
+
+        <div class="route-fields">
+          <div class="field">
+            <label for="origin-country">Where are you right now?</label>
+            <select id="origin-country" required>
+              <option value="">Select your country</option>
+            </select>
+          </div>
+          <div class="route-swap" aria-hidden="true">→</div>
+          <div class="field">
+            <label for="destination-country">Where do you want to go?</label>
+            <select id="destination-country" required>
+              <option value="">Select your destination</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="flight-input">Generated flight number</label>
+          <input type="text" id="flight-input" placeholder="Select two countries to generate" maxlength="8" readonly required>
+          <p class="field-note">Worldwide demo data includes 250 countries and territories.</p>
         </div>
 
         <div class="field">
@@ -81,6 +105,7 @@
   <footer class="footer">© 2026 FunTheDelay — MVP demo. All rights reserved.</footer>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="countries.js"></script>
   <script src="demo.js"></script>
 </body>
 </html>
