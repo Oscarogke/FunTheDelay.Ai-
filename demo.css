@@ -421,6 +421,7 @@ fieldset.field {
 .distance-pill { padding: .3rem .7rem; border-radius: 99px; background: #dff3fc; color: #245477; font-size: .8rem; font-weight: 700; }
 .route-map { height: 310px; min-height: 310px; border-radius: 12px; overflow: hidden; background: #dceaf1; z-index: 0; }
 .route-map .leaflet-overlay-pane svg { width: auto; height: auto; }
+.map-credit { margin: .32rem 0 0; color: var(--muted); font-size: .64rem; line-height: 1.25; text-align: right; }
 .route-cities { display: grid; grid-template-columns: 1fr auto 1fr; gap: .75rem; align-items: center; padding-top: .7rem; font-size: .85rem; }
 .route-cities strong:last-child { text-align: right; }
 .route-cities span { color: var(--red); font-weight: 900; }

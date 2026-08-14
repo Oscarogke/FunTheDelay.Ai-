@@ -265,9 +265,8 @@
   function renderRouteMap(flight) {
     if (!window.L) return;
     if (!routeMap) {
-      routeMap = L.map("route-map", { scrollWheelZoom: false, minZoom: 2 });
+      routeMap = L.map("route-map", { scrollWheelZoom: false, minZoom: 2, attributionControl: false });
       L.imageOverlay("world-map.jpg", [[-85.0511, -180], [85.0511, 180]]).addTo(routeMap);
-      routeMap.attributionControl.addAttribution("Map © Esri, HERE, Garmin, OpenStreetMap contributors");
     }
     if (routeLayer) routeLayer.remove();
     routeLayer = L.layerGroup().addTo(routeMap);
