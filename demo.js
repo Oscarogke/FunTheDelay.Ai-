@@ -329,21 +329,7 @@
       if (!places) {
         var lat = Number(country.lat).toFixed(5);
         var lon = Number(country.lon).toFixed(5);
-        var query = '[out:json][timeout:15];' +
-          'nwr["name"]["tourism"~"hotel|hostel|guest_house"](around:12000,' + lat + ',' + lon + ');out tags center 4;' +
-          'nwr["name"]["amenity"~"restaurant|cafe|fast_food"](around:7000,' + lat + ',' + lon + ');out tags center 4;' +
-          'nwr["name"]["tourism"~"attraction|museum|gallery|viewpoint"](around:12000,' + lat + ',' + lon + ');out tags center 4;' +
-          'nwr["name"]["amenity"~"taxi|bus_station|ferry_terminal"](around:10000,' + lat + ',' + lon + ');out tags center 4;';
-        var controller = new AbortController();
-        var timer = setTimeout(function () { controller.abort(); }, 18000);
-        var response;
-        try {
-          response = await fetch("https://maps.mail.ru/osm/tools/overpass/api/interpreter?data=" + encodeURIComponent(query), { signal: controller.signal });
-        } finally {
-          clearTimeout(timer);
-        }
-        if (!response.ok) throw new Error("Place service unavailable");
-        var data = await response.json();
+        var data = await fetchPlaceCategories(lat, lon, needs);
         places = categorizePlaces(data.elements || []);
         realPlacesCache[country.code] = places;
       }
@@ -352,6 +338,53 @@
     } catch (error) {
       target.className = "real-places-error";
       target.innerHTML = '<p><strong>Live places are temporarily unavailable.</strong><br>Please retry shortly. We do not substitute made-up recommendations.</p>';
+    }
+  }
+
+  async function fetchPlaceCategories(lat, lon, needs) {
+    var specs = [];
+    if (needs.indexOf("overnight") !== -1) {
+      specs.push({ endpoints: ["https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter"], query: 'node["name"]["tourism"~"hotel|hostel|guest_house"](around:5000,' + lat + ',' + lon + ');out tags 4;' });
+      specs.push({ endpoints: ["https://overpass.private.coffee/api/interpreter", "https://maps.mail.ru/osm/tools/overpass/api/interpreter"], query: 'node["name"]["amenity"~"restaurant|cafe|fast_food"](around:2000,' + lat + ',' + lon + ');out tags 4;' });
+    }
+    if (needs.indexOf("transport") !== -1 || needs.indexOf("overnight") !== -1) {
+      specs.push({ endpoints: ["https://overpass.kumi.systems/api/interpreter", "https://overpass-api.de/api/interpreter"], query: 'node["name"]["amenity"~"taxi|bus_station|ferry_terminal"](around:4000,' + lat + ',' + lon + ');out tags 4;' });
+    }
+    if (needs.indexOf("fun") !== -1) {
+      specs.push({ endpoints: ["https://maps.mail.ru/osm/tools/overpass/api/interpreter", "https://overpass.private.coffee/api/interpreter"], query: 'node["name"]["tourism"~"attraction|museum|gallery|viewpoint"](around:4000,' + lat + ',' + lon + ');out tags 4;' });
+    }
+    var results = await Promise.allSettled(specs.map(function (spec) {
+      return fetchPlaceCategoryWithFallback(spec.endpoints, "[out:json][timeout:8];" + spec.query);
+    }));
+    var elements = [];
+    results.forEach(function (result) {
+      if (result.status === "fulfilled") elements = elements.concat(result.value.elements || []);
+    });
+    if (!elements.length) throw new Error("No place server responded");
+    return { elements: elements };
+  }
+
+  async function fetchPlaceCategoryWithFallback(endpoints, query) {
+    var lastError;
+    for (var index = 0; index < endpoints.length; index++) {
+      try {
+        return await fetchOnePlaceCategory(endpoints[index], query);
+      } catch (error) {
+        lastError = error;
+      }
+    }
+    throw lastError || new Error("No category server responded");
+  }
+
+  async function fetchOnePlaceCategory(endpoint, query) {
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, 9000);
+    try {
+      var response = await fetch(endpoint + "?data=" + encodeURIComponent(query), { signal: controller.signal });
+      if (!response.ok) throw new Error("Place server returned " + response.status);
+      return await response.json();
+    } finally {
+      clearTimeout(timer);
     }
   }
 
