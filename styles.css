@@ -158,6 +158,15 @@ body {
   color: var(--red);
 }
 
+.problem-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-top: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(11, 31, 75, 0.15);
+}
+
 /* ---------- Steps ---------- */
 .steps {
   display: grid;
