@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FunTheDelay — Demo</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="demo.css?v=reviews1">
+  <link rel="stylesheet" href="demo.css?v=stopover1">
 </head>
 <body>
 
@@ -46,6 +46,14 @@
               <option value="">Select your destination</option>
             </select>
           </div>
+        </div>
+
+        <div class="field stopover-field">
+          <label for="stuck-country">What country are you stuck in? <span class="optional-label">Optional</span></label>
+          <select id="stuck-country">
+            <option value="">I am not stuck in another country</option>
+          </select>
+          <p class="field-note">Choose a stopover country to see useful places there first.</p>
         </div>
 
         <div class="field">
@@ -109,6 +117,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="countries.js?v=realplaces4"></script>
   <script src="places.js?v=realplaces4"></script>
-  <script src="demo.js?v=reviews1"></script>
+  <script src="demo.js?v=stopover1"></script>
 </body>
 </html>

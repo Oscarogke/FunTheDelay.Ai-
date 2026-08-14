@@ -93,6 +93,7 @@
   var planSections = document.getElementById("plan-sections");
   var originSelect = document.getElementById("origin-country");
   var destinationSelect = document.getElementById("destination-country");
+  var stuckSelect = document.getElementById("stuck-country");
   var featuredSelect = document.getElementById("featured-route");
   var featuredList = document.getElementById("featured-route-list");
   var flightInput = document.getElementById("flight-input");
@@ -111,6 +112,8 @@
       return;
     }
     flight.code = code;
+    flight.stuckCountry = findCountry(stuckSelect.value) || null;
+    if (flight.stuckCountry && flight.stuckCountry.code === flight.destinationCountry.code) flight.stuckCountry = null;
 
     var cause = document.getElementById("cause-select").value;
     var needs = [];
@@ -135,6 +138,7 @@
     flightInput.value = "";
     originSelect.value = "";
     destinationSelect.value = "";
+    stuckSelect.value = "";
     featuredSelect.value = "";
     setFeaturedListDisabled(false);
     featuredList.querySelectorAll(".flight-pick.selected").forEach(function (item) {
@@ -143,6 +147,7 @@
     });
     originSelect.disabled = false;
     destinationSelect.disabled = false;
+    stuckSelect.disabled = false;
     featuredSelect.disabled = false;
     document.querySelector('#plan-form button[type="submit"]').textContent = "Generate my plan";
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -153,6 +158,7 @@
     document.getElementById("screen-input").classList.remove("hidden");
     originSelect.disabled = true;
     destinationSelect.disabled = true;
+    stuckSelect.disabled = true;
     featuredSelect.disabled = true;
     setFeaturedListDisabled(true);
     document.querySelector('#plan-form button[type="submit"]').textContent = "Update my plan";
@@ -165,6 +171,7 @@
       var label = country.name + " — " + country.capital;
       originSelect.add(new Option(label, country.code));
       destinationSelect.add(new Option(label, country.code));
+      stuckSelect.add(new Option(country.name + " — " + country.capital, country.code));
     });
     window.FEATURED_FLIGHTS.forEach(function (route, index) {
       var from = findCountry(route.from);
@@ -308,18 +315,33 @@
     }
 
     if (needs.indexOf("overnight") !== -1 || needs.indexOf("transport") !== -1 || needs.indexOf("fun") !== -1) {
-      html += sectionHeader("Real places near " + flight.destinationCountry.capital, "Live destination recommendations from OpenStreetMap.");
+      var firstPlaceCountry = flight.stuckCountry || flight.destinationCountry;
+      html += sectionHeader("Real places near " + firstPlaceCountry.capital, flight.stuckCountry ? "Useful recommendations for the country where you are currently stuck." : "Live destination recommendations from OpenStreetMap.");
       html += '<div id="real-places" class="real-places-loading"><span class="loading-ring"></span><p>Finding real hotels, food, attractions and transport…</p></div>';
+      if (flight.stuckCountry) {
+        html += '<div id="destination-places-action" class="destination-places-action"><p>Planning ahead?</p><button type="button" id="destination-places-btn" class="btn btn-outline">Show places for when you get to ' + safeText(flight.destinationCountry.name) + '</button></div>';
+      }
     }
 
     planSections.innerHTML = html;
-    if (document.getElementById("real-places")) loadRealPlaces(flight, needs);
+    if (document.getElementById("real-places")) {
+      loadRealPlaces(flight.stuckCountry || flight.destinationCountry, needs);
+      var destinationPlacesButton = document.getElementById("destination-places-btn");
+      if (destinationPlacesButton) destinationPlacesButton.addEventListener("click", function () {
+        var heading = Array.from(planSections.querySelectorAll(".plan-section > h2")).find(function (title) { return title.textContent.indexOf("Real places near ") !== -1; });
+        if (heading) heading.innerHTML = '<span class="dot"></span>Real places near ' + safeText(flight.destinationCountry.capital);
+        if (heading && heading.nextElementSibling) heading.nextElementSibling.textContent = "Live destination recommendations from OpenStreetMap.";
+        document.getElementById("destination-places-action").classList.add("hidden");
+        loadRealPlaces(flight.destinationCountry, needs);
+      });
+    }
   }
 
-  async function loadRealPlaces(flight, needs) {
-    var country = flight.destinationCountry;
+  async function loadRealPlaces(country, needs) {
     var target = document.getElementById("real-places");
     if (!target || !country) return;
+    target.className = "real-places-loading";
+    target.innerHTML = '<span class="loading-ring"></span><p>Finding real hotels, food, attractions and transport…</p>';
     try {
       var places = realPlacesCache[country.code];
       if (!places && window.CACHED_REAL_PLACES && window.CACHED_REAL_PLACES[country.code]) {
