@@ -158,13 +158,36 @@ body {
   color: var(--red);
 }
 
-.problem-image {
-  display: block;
-  max-width: 100%;
+/* ---------- Two-column split (text + image) ---------- */
+.split {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2.5rem;
+}
+
+.split-text {
+  flex: 1 1 55%;
+  max-width: 640px;
+}
+
+.side-image {
+  flex: 1 1 45%;
+  max-width: 460px;
   height: auto;
-  margin-top: 2rem;
   border-radius: 16px;
-  box-shadow: 0 4px 14px rgba(11, 31, 75, 0.15);
+  box-shadow: 0 8px 24px rgba(11, 31, 75, 0.18);
+}
+
+@media (max-width: 760px) {
+  .split {
+    flex-direction: column;
+  }
+
+  .split-text,
+  .side-image {
+    max-width: 100%;
+  }
 }
 
 /* ---------- Steps ---------- */
