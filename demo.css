@@ -454,6 +454,12 @@ fieldset.field {
 .real-place-group { margin-top: 1.2rem; }
 .real-place-group > h3 { margin-bottom: .6rem; }
 .real-place-card .row { color: var(--muted); }
+.place-review { margin-top: .8rem; padding-top: .75rem; border-top: 1px solid #e1e8f0; color: #394966; }
+.place-review-score { display: flex; align-items: center; gap: .45rem; margin-bottom: .35rem; }
+.place-review-score span { color: #f2a900; letter-spacing: .06em; font-size: .82rem; }
+.place-review-score strong { color: var(--dark-blue); font-size: .8rem; }
+.place-review p { margin: 0; font-size: .82rem; font-style: italic; line-height: 1.45; }
+.place-review small { display: block; margin-top: .3rem; color: var(--muted); font-size: .7rem; font-weight: 700; font-style: normal; }
 .places-source { margin-top: 1.2rem; padding-top: .8rem; border-top: 1px solid #dbe4f0; color: var(--muted); font-size: .75rem; }
 .places-source a { color: #2875a1; }
 

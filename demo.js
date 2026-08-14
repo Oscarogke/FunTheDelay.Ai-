@@ -433,8 +433,22 @@
   function realPlaceGroup(title, places, tag) {
     if (!places.length) return '<div class="real-place-group"><h3>' + safeText(title) + '</h3><p class="plan-note">No named places were found in this category.</p></div>';
     return '<div class="real-place-group"><h3>' + safeText(title) + '</h3><div class="cards">' + places.map(function (place) {
-      return '<article class="card real-place-card"><span class="tag">' + safeText(tag) + '</span><h3>' + safeText(place.name) + '</h3><p class="row"><strong>' + safeText(place.type) + '</strong></p><p class="row">' + safeText(place.address) + '</p></article>';
+      var review = demoPlaceReview(place, tag);
+      return '<article class="card real-place-card"><span class="tag">' + safeText(tag) + '</span><h3>' + safeText(place.name) + '</h3><p class="row"><strong>' + safeText(place.type) + '</strong></p><p class="row">' + safeText(place.address) + '</p>' +
+        '<div class="place-review"><div class="place-review-score" aria-label="Demo rating ' + review.rating + ' out of 5"><span aria-hidden="true">★★★★★</span><strong>' + review.rating + '</strong></div><p>“' + safeText(review.text) + '”</p><small>Demo traveler review</small></div></article>';
     }).join("") + '</div></div>';
+  }
+
+  function demoPlaceReview(place, tag) {
+    var reviews = {
+      Stay: ["A convenient option for a comfortable overnight stop.", "Guests would appreciate the location and easy check-in.", "A practical place to rest and reset during a delay."],
+      Food: ["A welcoming local stop for a relaxed meal.", "A handy choice for tasting something from the area.", "Good for a quick bite before continuing the journey."],
+      Transport: ["A useful connection for getting around the city.", "Convenient for continuing the trip from the airport area.", "A practical local transport option for travelers."],
+      Explore: ["A memorable way to experience the destination.", "Worth adding to the plan for a taste of local culture.", "A pleasant stop when there is time to explore."]
+    };
+    var score = 0;
+    String(place.name).split("").forEach(function (character) { score += character.charCodeAt(0); });
+    return { rating: (4.2 + (score % 7) / 10).toFixed(1), text: (reviews[tag] || reviews.Explore)[score % 3] };
   }
 
   function safeText(value) {
