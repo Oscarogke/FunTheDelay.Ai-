@@ -1,0 +1,429 @@
+:root {
+  --dark-blue: #0b1f4b;
+  --red: #e63946;
+  --sky-blue: #5ac8fa;
+  --light: #f5f8fc;
+  --white: #ffffff;
+  --muted: #5a6a8a;
+  --shadow: 0 4px 14px rgba(11, 31, 75, 0.10);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  color: var(--dark-blue);
+  line-height: 1.6;
+  background: linear-gradient(160deg, var(--dark-blue) 0%, #1d4f8f 70%, var(--sky-blue) 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Top bar ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--white);
+  backdrop-filter: blur(4px);
+}
+
+.topbar-logo {
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.demo-badge {
+  background: var(--red);
+  color: var(--white);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+}
+
+.topbar-link {
+  margin-left: auto;
+  color: var(--sky-blue);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.topbar-link:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Layout ---------- */
+.wrap {
+  flex: 1;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 3rem;
+}
+
+.screen {
+  background: var(--white);
+  border-radius: 18px;
+  padding: 2.2rem 2rem;
+  box-shadow: var(--shadow);
+}
+
+.hidden {
+  display: none;
+}
+
+.screen h1 {
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  margin-bottom: 0.4rem;
+}
+
+.sub {
+  color: var(--muted);
+  margin-bottom: 1.8rem;
+  font-size: 1.02rem;
+}
+
+/* ---------- Form ---------- */
+.field {
+  margin-bottom: 1.5rem;
+}
+
+.field label,
+.field legend {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.45rem;
+  font-size: 0.98rem;
+}
+
+.field input[type="text"],
+.field select {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 2px solid var(--sky-blue);
+  border-radius: 12px;
+  font-size: 1rem;
+  color: var(--dark-blue);
+  background: var(--white);
+}
+
+.field input[type="text"]:focus,
+.field select:focus {
+  outline: 3px solid rgba(90, 200, 250, 0.45);
+}
+
+fieldset.field {
+  border: none;
+  padding: 0;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.8rem;
+  border-radius: 10px;
+  background: var(--light);
+  margin-bottom: 0.55rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--red);
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-block;
+  padding: 0.85rem 2.1rem;
+  border-radius: 999px;
+  font-size: 1.02rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-red {
+  background: var(--red);
+  color: var(--white);
+}
+
+.btn-red:hover {
+  background: #c02431;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--dark-blue);
+  border: 2px solid var(--sky-blue);
+}
+
+.btn-outline:hover {
+  background: var(--light);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1.8rem;
+}
+
+/* ---------- Flight banner ---------- */
+.flight-banner {
+  background: linear-gradient(120deg, var(--dark-blue), #1d4f8f);
+  color: var(--white);
+  border-radius: 14px;
+  padding: 1.4rem 1.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.flight-route {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.flight-route .arrow {
+  color: var(--sky-blue);
+  margin: 0 0.4rem;
+}
+
+.flight-meta {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ---------- Delay card ---------- */
+.delay-card {
+  background: #fff3f4;
+  border: 2px solid var(--red);
+  border-radius: 14px;
+  padding: 1.1rem 1.4rem;
+  margin-bottom: 1.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.delay-label {
+  background: var(--red);
+  color: var(--white);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.delay-text {
+  font-weight: 600;
+}
+
+/* ---------- Plan sections ---------- */
+.plan-section {
+  margin-bottom: 2.2rem;
+}
+
+.plan-section h2 {
+  font-size: 1.3rem;
+  color: var(--dark-blue);
+  margin-bottom: 0.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.plan-section h2 .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--red);
+  display: inline-block;
+}
+
+.plan-note {
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin-bottom: 1rem;
+}
+
+/* Cards grid */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  border: 2px solid var(--sky-blue);
+  border-radius: 14px;
+  padding: 1.1rem 1.2rem;
+  background: var(--light);
+}
+
+.card h3 {
+  font-size: 1.05rem;
+  margin-bottom: 0.3rem;
+}
+
+.card .tag {
+  display: inline-block;
+  background: var(--sky-blue);
+  color: var(--dark-blue);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  margin-bottom: 0.5rem;
+}
+
+.card .tag.rec {
+  background: var(--red);
+  color: var(--white);
+}
+
+.card .row {
+  font-size: 0.93rem;
+  color: var(--dark-blue);
+  margin-top: 0.25rem;
+}
+
+.card .row span {
+  font-weight: 600;
+}
+
+.card .price {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--red);
+}
+
+/* Recommended highlight */
+.card.recommended {
+  border-color: var(--red);
+  box-shadow: 0 4px 14px rgba(230, 57, 70, 0.25);
+}
+
+/* Rebooking list */
+.flight-option {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  border: 2px solid var(--sky-blue);
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.8rem;
+  background: var(--light);
+}
+
+.flight-option.recommended {
+  border-color: var(--red);
+  background: #fff3f4;
+}
+
+.flight-option .time {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.flight-option .airline {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.flight-option .status {
+  font-weight: 600;
+  color: #0a7a3d;
+}
+
+.flight-option .status.wait {
+  color: #b8860b;
+}
+
+/* Steps list */
+.steps-list {
+  list-style: none;
+}
+
+.steps-list li {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  padding: 0.85rem 1rem;
+  background: var(--light);
+  border-left: 5px solid var(--sky-blue);
+  border-radius: 10px;
+  margin-bottom: 0.7rem;
+}
+
+.steps-list li .step-num {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--red);
+  color: var(--white);
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.disclaimer {
+  margin-top: 1.6rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  border-top: 1px solid #dbe4f0;
+  padding-top: 1rem;
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  text-align: center;
+  padding: 1.2rem 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85rem;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 600px) {
+  .screen {
+    padding: 1.6rem 1.2rem;
+  }
+
+  .flight-route {
+    font-size: 1.2rem;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}

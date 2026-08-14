@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FunTheDelay — Demo</title>
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <span class="topbar-logo">FunTheDelay</span>
+    <span class="demo-badge">MVP DEMO</span>
+    <a href="index.html" class="topbar-link">Back to Home</a>
+  </header>
+
+  <main class="wrap">
+
+    <!-- Screen 1: Input -->
+    <section id="screen-input" class="screen">
+      <h1>Turn a delay into a plan</h1>
+      <p class="sub">Demo app — everything below is simulated, no real bookings or data.</p>
+
+      <form id="plan-form">
+        <div class="field">
+          <label for="flight-input">Flight number</label>
+          <input type="text" id="flight-input" placeholder="e.g. UA123" maxlength="8" required>
+        </div>
+
+        <div class="field">
+          <label for="cause-select">Cause of the delay</label>
+          <select id="cause-select">
+            <option value="Weather conditions">Weather conditions</option>
+            <option value="Technical issue with the aircraft">Technical issue with the aircraft</option>
+            <option value="Crew / airline operations">Crew / airline operations</option>
+            <option value="Airport congestion">Airport congestion</option>
+            <option value="Refueling / ground services">Refueling / ground services</option>
+          </select>
+        </div>
+
+        <fieldset class="field">
+          <legend>What do you need?</legend>
+          <label class="check"><input type="checkbox" name="need" value="rebooking" checked> Rebooking on another flight</label>
+          <label class="check"><input type="checkbox" name="need" value="refund"> Refund / compensation info</label>
+          <label class="check"><input type="checkbox" name="need" value="overnight" checked> Stay overnight (hotel + meals)</label>
+          <label class="check"><input type="checkbox" name="need" value="transport"> Transport around the city</label>
+          <label class="check"><input type="checkbox" name="need" value="fun"> Local attractions to kill time</label>
+        </fieldset>
+
+        <button type="submit" class="btn btn-red">Generate my plan</button>
+      </form>
+    </section>
+
+    <!-- Screen 2: Result -->
+    <section id="screen-result" class="screen hidden">
+      <div class="flight-banner" id="flight-banner"></div>
+
+      <div id="delay-card"></div>
+      <div id="plan-sections"></div>
+
+      <div class="actions">
+        <button id="reset-btn" class="btn btn-outline">Start a new plan</button>
+        <a href="#screen-input" class="btn btn-outline">Edit my needs</a>
+      </div>
+      <p class="disclaimer">Simulated demo output. In the real app, this plan would be generated live by our AI using live flight, hotel, and transport data.</p>
+    </section>
+
+  </main>
+
+  <footer class="footer">© 2026 FunTheDelay — MVP demo. All rights reserved.</footer>
+
+  <script src="demo.js"></script>
+</body>
+</html>
